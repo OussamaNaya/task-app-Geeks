@@ -18,6 +18,7 @@ function createTask(req, res) {
         }
         const task = {
             id: Date.now(),
+            idUser: req.user.id,
             title,
             description,
             status: "pending",

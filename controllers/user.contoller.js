@@ -62,8 +62,24 @@ function loginUser(req, res) {
     }
 }
 
+function getUserById(req, res) {
+    try {
+        const { id } = req.params;
+        const users = readFileSync("./users.json");
+        const user = users.find(u => u.id === Number(id));
+        if (!user) {
+            return res.status(404).send("User not found");
+        }
+        res.status(200).send(user);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send("Internal server error");
+    }
+}
+
 module.exports = {
     getAllUsers,
     registerUser,
-    loginUser
+    loginUser,
+    getUserById
 }

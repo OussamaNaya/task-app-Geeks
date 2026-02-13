@@ -32,7 +32,13 @@
             <h2 style="margin-bottom: 20px;">Create New Task</h2>
             <form id="taskForm">
                 <div class="form-group">
-                    <input type="text" name="title" required placeholder="Task title">
+                    <label for="title">Title</label>
+                    <input type="text" id="title" name="title" required placeholder="Meeting with team">
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <input type="text" id="description" name="description" required
+                        placeholder="Discuss project milestones">
                 </div>
                 <button type="submit">Add Task</button>
             </form>
@@ -52,12 +58,39 @@
                 const tasks = await res.json();
                 const list = document.getElementById('taskList');
                 list.innerHTML = tasks.length ? '' : '<p class="subtitle">No tasks found. Create one!</p>';
-                tasks.forEach(task => {
+                for (const task of tasks) {
+                    const date = new Date(task.createdAt).toLocaleDateString('fr-FR', {
+                        day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
+                    });
+
+                    let authorName = 'Unknown';
+                    try {
+                        const userRes = await fetch(`/api/v1/user/${task.idUser}`, {
+                            headers: { 'Authorization': 'Bearer ' + token }
+                        });
+                        if (userRes.ok) {
+                            const userData = await userRes.json();
+                            authorName = userData.username;
+                        }
+                    } catch (e) {
+                        console.error("Error fetching user", e);
+                    }
+
                     const div = document.createElement('div');
                     div.className = 'task-card';
-                    div.innerHTML = `<span>${task.title}</span>`;
+                    div.innerHTML = `
+                        <div class="task-header">
+                            <span class="task-title">${task.title}</span>
+                            <span class="status-badge status-${task.status}">${task.status}</span>
+                        </div>
+                        <p class="task-desc">${task.description || 'No description'}</p>
+                        <div class="task-footer">
+                            <span class="task-date">${date}</span>
+                            <span class="task-author" style="font-size: 0.8rem; color: var(--primary);">Par: ${authorName}</span>
+                        </div>
+                    `;
                     list.appendChild(div);
-                });
+                }
                 document.getElementById('greeting').textContent = `Manage your daily workflow`;
             } else if (res.status === 401) {
                 localStorage.removeItem('token');
@@ -83,7 +116,8 @@
                 e.target.reset();
                 fetchTasks();
             } else {
-                alert('Error creating task');
+                const err = await res.text();
+                alert('Error: ' + err);
             }
         });
 
