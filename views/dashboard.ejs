@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Tasks App</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            align-items: flex-start;
+            justify-content: flex-start;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container dashboard-container">
+        <div class="header">
+            <div>
+                <h1>Your Tasks</h1>
+                <p id="greeting" class="subtitle" style="text-align: left; margin-bottom: 0;">Loading tasks...</p>
+            </div>
+            <button id="logoutBtn" style="width: auto; padding: 10px 20px;">Logout</button>
+        </div>
+
+        <div id="taskList" class="task-list">
+            <!-- Tasks will be loaded here -->
+        </div>
+
+        <div style="margin-top: 40px;">
+            <h2 style="margin-bottom: 20px;">Create New Task</h2>
+            <form id="taskForm">
+                <div class="form-group">
+                    <input type="text" name="title" required placeholder="Task title">
+                </div>
+                <button type="submit">Add Task</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) window.location.href = '/login';
+
+        async function fetchTasks() {
+            const res = await fetch('/api/v1/task', {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+
+            if (res.ok) {
+                const tasks = await res.json();
+                const list = document.getElementById('taskList');
+                list.innerHTML = tasks.length ? '' : '<p class="subtitle">No tasks found. Create one!</p>';
+                tasks.forEach(task => {
+                    const div = document.createElement('div');
+                    div.className = 'task-card';
+                    div.innerHTML = `<span>${task.title}</span>`;
+                    list.appendChild(div);
+                });
+                document.getElementById('greeting').textContent = `Manage your daily workflow`;
+            } else if (res.status === 401) {
+                localStorage.removeItem('token');
+                window.location.href = '/login';
+            }
+        }
+
+        document.getElementById('taskForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+
+            const res = await fetch('/api/v1/task', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (res.ok) {
+                e.target.reset();
+                fetchTasks();
+            } else {
+                alert('Error creating task');
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('token');
+            window.location.href = '/login';
+        });
+
+        fetchTasks();
+    </script>
+</body>
+
+</html>
