@@ -1,9 +1,9 @@
 const fs = require("fs");
 const path = require("path");
 
-function readTasks(fileName) {
+function readFileSync(fileName) {
     try {
-        const tasks = fs.readFileSync(path.join(__dirname, fileName), "utf-8");
+        const tasks = fs.readFileSync(path.join(__dirname, "../data/", fileName), "utf-8");
         const parsedTasks = JSON.parse(tasks);
         return parsedTasks;
     } catch (error) {
@@ -12,15 +12,15 @@ function readTasks(fileName) {
     }
 }
 
-function writeTask(fileName, task) {
+function writeFileSync(fileName, task) {
     try {
-        fs.writeFileSync(path.join(__dirname, fileName), JSON.stringify(task, null, 2));
+        fs.writeFileSync(path.join(__dirname, "../data/", fileName), JSON.stringify(task, null, 2));
     } catch (error) {
         console.log(error);
     }
 }
 
 module.exports = {
-    readTasks,
-    writeTask
+    readFileSync,
+    writeFileSync
 };

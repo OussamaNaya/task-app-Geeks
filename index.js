@@ -1,6 +1,7 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const taskRoutes = require("./routes/task.routes");
+const userRoutes = require("./routes/user.routes");
 dotenv.config();
 
 
@@ -14,6 +15,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/v1/task", taskRoutes);
+app.use("/api/v1/user", userRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

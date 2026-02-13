@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1771001860368,
+    "username": "Othman",
+    "email": "othman@gmail.com",
+    "password": "$2b$10$9MCc34Fa0GbTYhTbNWQc8ukIJs3Sr7oHBYjL00piSvy.yGxpZaniO"
+  },
+  {
+    "id": 1771001936393,
+    "username": "Oussama",
+    "email": "oussama@gmail.com",
+    "password": "$2b$10$WN20EsqrQtusVh004rmBRuR88xRTuznxo9sstGtThaywJb/M1/6dq"
+  },
+  {
+    "id": 1771001951052,
+    "username": "Amin",
+    "email": "amin@gmail.com",
+    "password": "$2b$10$vF6ze1XgglPyJ7Z8g4.i0uj5s7SIV8w.fnXZ96ZALagbH3642TPli"
+  }
+]

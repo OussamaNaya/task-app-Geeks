@@ -1,8 +1,8 @@
-const { readTasks, writeTask } = require("../utils/tasks.util");
+const { readFileSync, writeFileSync } = require("../utils/fileDB.util");
 
 function getAllTasks(req, res) {
     try {
-        const tasks = readTasks("./tasks.json");
+        const tasks = readFileSync("./tasks.json");
         res.status(200).send(tasks);
     } catch (error) {
         console.log(error);
@@ -24,10 +24,10 @@ function createTask(req, res) {
             createdAt: new Date()
         }
 
-        const tasks = readTasks("./tasks.json");
+        const tasks = readFileSync("./tasks.json");
         tasks.push(task);
 
-        writeTask("./tasks.json", tasks);
+        writeFileSync("./tasks.json", tasks);
         res.status(201).send("Task created successfully");
     } catch (error) {
         console.log(error);
