@@ -1,5 +1,6 @@
 const { readFileSync, writeFileSync } = require("../utils/fileDB.util");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 function getAllUsers(req, res) {
     try {
@@ -38,7 +39,31 @@ async function registerUser(req, res) {
     }
 }
 
+function loginUser(req, res) {
+    try {
+        const { email, password } = req.body;
+        if (!email || !password) {
+            return res.status(400).send("Email and password are required");
+        }
+        const users = readFileSync("./users.json");
+        const user = users.find(u => u.email === email);
+        if (!user) {
+            return res.status(404).send("User not found");
+        }
+        const isPasswordValid = bcrypt.compareSync(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(401).send("Invalid password");
+        }
+        const token = jwt.sign({ id: user.id, username: user.username, email: user.email }, process.env.JWT_SECRET, { expiresIn: "1h" });
+        res.status(200).send({ token });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send("Internal server error");
+    }
+}
+
 module.exports = {
     getAllUsers,
-    registerUser
+    registerUser,
+    loginUser
 }
